@@ -3,7 +3,7 @@
 
   window.SB_SURVEY_EMBED = {
 
-    SURVEY_URL: 'https://jdonline.deere.com/content/surveys/69cae9f2eabe495602806bbe',
+    SURVEY_URL: 'https://jdonline.staffbase.com/studio/content/form/6a0366d20abf535a160edfaa',
 
     init: function () {
       SB_SURVEY_EMBED.injectStyles();
