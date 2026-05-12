@@ -18,7 +18,7 @@
           position: fixed;
           bottom: 120px;
           right: 0;
-          background: #CC0000;
+          background: #006400;
           color: white;
           padding: 10px 14px;
           cursor: pointer;
