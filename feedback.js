@@ -1,16 +1,12 @@
 (function () {
   if (window.SB_SURVEY_EMBED) return;
-
   window.SB_SURVEY_EMBED = {
-
     SURVEY_URL: 'https://jdonline.staffbase.com/studio/content/form/6a0366d20abf535a160edfaa',
-
     init: function () {
       SB_SURVEY_EMBED.injectStyles();
       SB_SURVEY_EMBED.createTab();
       SB_SURVEY_EMBED.createModal();
     },
-
     injectStyles: function () {
       var style = document.createElement('style');
       style.textContent = `
@@ -64,15 +60,23 @@
           background: none;
           border: none;
         }
-        #sb-survey-iframe {
+        #sb-survey-iframe-wrapper {
           width: 100%;
-          height: 100%;
+          flex: 1;
+          overflow: hidden;
+          position: relative;
+        }
+        #sb-survey-iframe {
+          position: absolute;
+          top: -145px;
+          left: 0;
+          width: 100%;
+          height: calc(100% + 145px);
           border: none;
         }
       `;
       document.head.appendChild(style);
     },
-
     createTab: function () {
       var tab = document.createElement('div');
       tab.id = 'sb-survey-tab';
@@ -80,54 +84,46 @@
       tab.addEventListener('click', SB_SURVEY_EMBED.openModal);
       document.body.appendChild(tab);
     },
-
     createModal: function () {
-      // Overlay (the dark background)
       var overlay = document.createElement('div');
       overlay.id = 'sb-survey-overlay';
 
-      // Modal box
       var modal = document.createElement('div');
       modal.id = 'sb-survey-modal';
 
-      // Close button
       var closeBtn = document.createElement('button');
       closeBtn.id = 'sb-survey-close';
       closeBtn.textContent = '✕';
       closeBtn.addEventListener('click', SB_SURVEY_EMBED.closeModal);
 
-      // The iframe pointing to the survey
       var iframe = document.createElement('iframe');
       iframe.id = 'sb-survey-iframe';
       iframe.src = SB_SURVEY_EMBED.SURVEY_URL;
 
+      var iframeWrapper = document.createElement('div');
+      iframeWrapper.id = 'sb-survey-iframe-wrapper';
+      iframeWrapper.appendChild(iframe);
+
       modal.appendChild(closeBtn);
-      modal.appendChild(iframe);
+      modal.appendChild(iframeWrapper);
       overlay.appendChild(modal);
 
-      // Clicking the dark background also closes it
       overlay.addEventListener('click', function (e) {
         if (e.target === overlay) SB_SURVEY_EMBED.closeModal();
       });
 
       document.body.appendChild(overlay);
     },
-
     openModal: function () {
       document.getElementById('sb-survey-overlay').classList.add('open');
     },
-
     closeModal: function () {
       document.getElementById('sb-survey-overlay').classList.remove('open');
     },
-
   };
-
-  // Same load-timing logic as Kampyle
   if (document.readyState === 'complete') {
     window.SB_SURVEY_EMBED.init();
   } else {
     window.addEventListener('load', window.SB_SURVEY_EMBED.init);
   }
-
 })();
