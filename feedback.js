@@ -1,7 +1,7 @@
 (function () {
   if (window.SB_SURVEY_EMBED) return;
   window.SB_SURVEY_EMBED = {
-    SURVEY_URL: 'https://jdonline.staffbase.com/studio/content/form/6a0366d20abf535a160edfaa',
+    SURVEY_URL: 'https://jdonline.staffbase.com/content/form/6a0366d20abf535a160edfab',
     init: function () {
       SB_SURVEY_EMBED.injectStyles();
       SB_SURVEY_EMBED.createTab();
