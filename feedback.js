@@ -67,10 +67,10 @@
         }
         #sb-survey-iframe {
           position: absolute;
-          top: -145px;
+          top: 0;
           left: 0;
           width: 100%;
-          height: calc(100% + 145px);
+          height: 100%;
           border: none;
         }
       `;
@@ -135,12 +135,17 @@
             padding: 0 !important;
             margin: 0 !important;
           }
-          /* Hide the Staffbase admin toolbar that sits above the form */
+          /* Hide the Staffbase nav bar and admin toolbar */
+          #header, .app-header, .wow-app-header,
           .contextual-toolbar-container,
           .contextual-action-toolbar {
             display: none !important;
             height: 0 !important;
             overflow: hidden !important;
+          }
+          /* Remove the wrapper padding-top that accounts for the nav bar */
+          #wrapper {
+            padding-top: 0 !important;
           }
           .page, .page.iframe,
           .page-content, .scroller, #content,
