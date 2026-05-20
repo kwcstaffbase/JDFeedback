@@ -40,25 +40,36 @@
         #sb-survey-overlay.open {
           display: flex;
         }
-        #sb-survey-modal {
-          background: white;
+        #sb-survey-modal-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
           width: 700px;
           max-width: 95vw;
+        }
+        #sb-survey-modal {
+          background: white;
+          width: 100%;
           height: 80vh;
           border-radius: 8px;
           overflow: hidden;
           position: relative;
         }
         #sb-survey-close {
-          position: absolute;
-          top: 10px;
-          right: 14px;
-          font-size: 22px;
-          cursor: pointer;
-          z-index: 2;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: white;
           color: #333;
-          background: none;
+          font-size: 18px;
+          line-height: 1;
+          cursor: pointer;
           border: none;
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         #sb-survey-iframe-wrapper {
           position: absolute;
@@ -87,13 +98,16 @@
       var overlay = document.createElement('div');
       overlay.id = 'sb-survey-overlay';
 
-      var modal = document.createElement('div');
-      modal.id = 'sb-survey-modal';
+      var wrapper = document.createElement('div');
+      wrapper.id = 'sb-survey-modal-wrapper';
 
       var closeBtn = document.createElement('button');
       closeBtn.id = 'sb-survey-close';
       closeBtn.textContent = '✕';
       closeBtn.addEventListener('click', SB_SURVEY_EMBED.closeModal);
+
+      var modal = document.createElement('div');
+      modal.id = 'sb-survey-modal';
 
       var iframe = document.createElement('iframe');
       iframe.id = 'sb-survey-iframe';
@@ -106,9 +120,10 @@
       iframeWrapper.id = 'sb-survey-iframe-wrapper';
       iframeWrapper.appendChild(iframe);
 
-      modal.appendChild(closeBtn);
       modal.appendChild(iframeWrapper);
-      overlay.appendChild(modal);
+      wrapper.appendChild(closeBtn);   // close button sits above the modal
+      wrapper.appendChild(modal);
+      overlay.appendChild(wrapper);
 
       overlay.addEventListener('click', function (e) {
         if (e.target === overlay) SB_SURVEY_EMBED.closeModal();
