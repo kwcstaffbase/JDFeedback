@@ -123,6 +123,41 @@
       document.getElementById('sb-survey-overlay').classList.remove('open');
       document.getElementById('sb-survey-tab').style.display = '';
     },
+    watchForModals: function () {
+      var tab = document.getElementById('sb-survey-tab');
+
+      function hasHostModal() {
+        // ARIA semantics (standard)
+        if (document.querySelector(
+          '[role="dialog"]:not(#sb-survey-overlay):not(#sb-survey-modal),' +
+          '[aria-modal="true"]:not(#sb-survey-overlay):not(#sb-survey-modal)'
+        )) return true;
+        // Body/html scroll-lock (many modal libraries set this)
+        var bodyStyle = window.getComputedStyle(document.body);
+        if (bodyStyle.overflow === 'hidden' || bodyStyle.overflowY === 'hidden') return true;
+        return false;
+      }
+
+      function updateTabVisibility() {
+        // Our own modal handles its own tab visibility via openModal/closeModal
+        var ourModalOpen = document.getElementById('sb-survey-overlay').classList.contains('open');
+        if (ourModalOpen) return;
+        tab.style.display = hasHostModal() ? 'none' : '';
+      }
+
+      var observer = new MutationObserver(updateTabVisibility);
+      // Watch for DOM additions and attribute changes on body/html
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['role', 'aria-modal', 'class', 'style'],
+      });
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style'],
+      });
+    },
   };
   if (document.readyState === 'complete') {
     window.SB_SURVEY_EMBED.init();
