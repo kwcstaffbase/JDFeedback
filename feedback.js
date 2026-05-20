@@ -48,8 +48,6 @@
           border-radius: 8px;
           overflow: hidden;
           position: relative;
-          display: flex;
-          flex-direction: column;
         }
         #sb-survey-close {
           position: absolute;
@@ -57,16 +55,15 @@
           right: 14px;
           font-size: 22px;
           cursor: pointer;
-          z-index: 1;
+          z-index: 2;
           color: #333;
           background: none;
           border: none;
         }
         #sb-survey-iframe-wrapper {
-          width: 100%;
-          flex: 1;
+          position: absolute;
+          inset: 0;
           overflow: hidden;
-          position: relative;
         }
         #sb-survey-iframe {
           position: absolute;
