@@ -99,29 +99,7 @@
       iframe.id = 'sb-survey-iframe';
       iframe.src = SB_SURVEY_EMBED.SURVEY_URL;
       iframe.addEventListener('load', function () {
-        try {
-          var doc = iframe.contentDocument;
-          if (doc && doc.head) {
-            var s = doc.createElement('style');
-            s.textContent = `
-              body, .page, .page.iframe {
-                background: white !important;
-              }
-              .page.iframe, .page-content, .scroller, #content {
-                max-width: 100% !important;
-                width: 100% !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-                box-sizing: border-box !important;
-              }
-            `;
-            doc.head.appendChild(s);
-          }
-        } catch (e) {
-          // Cross-origin guard — shouldn't happen here since same-origin
-        }
+        SB_SURVEY_EMBED.cleanIframeDoc(iframe.contentDocument);
       });
 
       var iframeWrapper = document.createElement('div');
@@ -145,6 +123,53 @@
     closeModal: function () {
       document.getElementById('sb-survey-overlay').classList.remove('open');
       document.getElementById('sb-survey-tab').style.display = '';
+    },
+    cleanIframeDoc: function (doc) {
+      if (!doc) return;
+      try {
+        // Inject CSS into this document
+        var s = doc.createElement('style');
+        s.textContent = `
+          html, body {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .page, .page.iframe,
+          .page-content, .scroller, #content,
+          .container-fluid, .app-container,
+          [class*="plugin-container"],
+          .sb-user-view, form {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-top: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+            background: white !important;
+          }
+          *::-webkit-scrollbar { display: none !important; }
+          * { scrollbar-width: none !important; }
+        `;
+        doc.head.appendChild(s);
+
+        // Recurse into any nested iframes
+        var nested = doc.querySelectorAll('iframe');
+        for (var i = 0; i < nested.length; i++) {
+          (function (f) {
+            if (f.contentDocument && f.contentDocument.head) {
+              SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument);
+            } else {
+              f.addEventListener('load', function () {
+                try { SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument); } catch (e) {}
+              });
+            }
+          })(nested[i]);
+        }
+      } catch (e) {}
     },
     watchForModals: function () {
       var tab = document.getElementById('sb-survey-tab');
