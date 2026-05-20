@@ -127,25 +127,13 @@
     cleanIframeDoc: function (doc) {
       if (!doc) return;
       try {
-        // Inject CSS into this document
+        // CSS for layout fixes that don't need JS enforcement
         var s = doc.createElement('style');
         s.textContent = `
           html, body {
             background: white !important;
             padding: 0 !important;
             margin: 0 !important;
-          }
-          /* Hide the Staffbase nav bar and admin toolbar */
-          #header, .app-header, .wow-app-header,
-          .contextual-toolbar-container,
-          .contextual-action-toolbar {
-            display: none !important;
-            height: 0 !important;
-            overflow: hidden !important;
-          }
-          /* Remove the wrapper padding-top that accounts for the nav bar */
-          #wrapper {
-            padding-top: 0 !important;
           }
           .page, .page.iframe,
           .page-content, .scroller, #content,
@@ -154,12 +142,8 @@
           .sb-user-view, form {
             max-width: 100% !important;
             width: 100% !important;
-            padding-top: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            margin-top: 0 !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
             box-sizing: border-box !important;
           }
           *::-webkit-scrollbar { display: none !important; }
@@ -167,19 +151,42 @@
         `;
         doc.head.appendChild(s);
 
-        // Recurse into any nested iframes
-        var nested = doc.querySelectorAll('iframe');
-        for (var i = 0; i < nested.length; i++) {
-          (function (f) {
-            if (f.contentDocument && f.contentDocument.head) {
-              SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument);
-            } else {
-              f.addEventListener('load', function () {
-                try { SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument); } catch (e) {}
-              });
-            }
-          })(nested[i]);
+        // Elements to hide — use JS so we win the race against SPA re-renders
+        var HIDE = [
+          '#header', '.app-header', '.wow-app-header',
+          '.contextual-toolbar-container', '.contextual-action-toolbar',
+          '#skip-link-container', 'nav',
+        ];
+
+        function applyHide() {
+          HIDE.forEach(function (sel) {
+            doc.querySelectorAll(sel).forEach(function (el) {
+              el.style.setProperty('display', 'none', 'important');
+            });
+          });
+          var wrapper = doc.querySelector('#wrapper');
+          if (wrapper) wrapper.style.setProperty('padding-top', '0', 'important');
         }
+
+        applyHide();
+
+        // Re-run whenever the SPA mutates the DOM
+        var mo = new MutationObserver(applyHide);
+        mo.observe(doc.documentElement, {
+          childList: true, subtree: true,
+          attributes: true, attributeFilter: ['style', 'class'],
+        });
+
+        // Recurse into nested iframes
+        doc.querySelectorAll('iframe').forEach(function (f) {
+          if (f.contentDocument && f.contentDocument.head) {
+            SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument);
+          } else {
+            f.addEventListener('load', function () {
+              try { SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument); } catch (e) {}
+            });
+          }
+        });
       } catch (e) {}
     },
     watchForModals: function () {
