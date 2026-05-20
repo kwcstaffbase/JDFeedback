@@ -44,7 +44,7 @@
           display: flex;
           flex-direction: column;
           align-items: flex-end;
-          width: 500px;
+          width: 700px;
           max-width: 95vw;
         }
         #sb-survey-modal {
@@ -142,65 +142,65 @@
     cleanIframeDoc: function (doc) {
       if (!doc) return;
       try {
-        // CSS for layout fixes that don't need JS enforcement
-        var s = doc.createElement('style');
-        s.textContent = `
-          html, body {
-            background: white !important;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .page, .page.iframe,
-          .page-content, .scroller, #content,
-          .container-fluid, .app-container,
-          [class*="plugin-container"],
-          .sb-user-view, form {
-            max-width: 100% !important;
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-          }
-          *::-webkit-scrollbar { display: none !important; }
-          * { scrollbar-width: none !important; }
-        `;
-        doc.head.appendChild(s);
+        // Scrollbar CSS — only thing CSS handles reliably here
+        if (doc.head) {
+          var s = doc.createElement('style');
+          s.textContent = `
+            html, body { background: white !important; }
+            *::-webkit-scrollbar { display: none !important; }
+            * { scrollbar-width: none !important; }
+          `;
+          doc.head.appendChild(s);
+        }
 
-        // Elements to hide — use JS so we win the race against SPA re-renders
-        var HIDE = [
-          '#header', '.app-header', '.wow-app-header',
-          '.contextual-toolbar-container', '.contextual-action-toolbar',
-          '#skip-link-container', 'nav',
-        ];
-
-        function applyHide() {
-          HIDE.forEach(function (sel) {
+        function applyFixes() {
+          // Hide nav/chrome — setProperty wins over SPA inline styles
+          ['#header', '.app-header', '.wow-app-header',
+           '.contextual-toolbar-container', '.contextual-action-toolbar',
+           '#skip-link-container', 'nav'
+          ].forEach(function (sel) {
             doc.querySelectorAll(sel).forEach(function (el) {
               el.style.setProperty('display', 'none', 'important');
             });
           });
-          var wrapper = doc.querySelector('#wrapper');
-          if (wrapper) wrapper.style.setProperty('padding-top', '0', 'important');
+
+          // Zero out all spacing/sizing on layout containers
+          ['#wrapper', '.page', '.page-content', '.scroller', '#content',
+           '.container-fluid', '.app-container', '.sb-user-view', 'form'
+          ].forEach(function (sel) {
+            doc.querySelectorAll(sel).forEach(function (el) {
+              el.style.setProperty('width', '100%', 'important');
+              el.style.setProperty('max-width', '100%', 'important');
+              el.style.setProperty('padding-top', '0', 'important');
+              el.style.setProperty('padding-left', '0', 'important');
+              el.style.setProperty('padding-right', '0', 'important');
+              el.style.setProperty('margin-top', '0', 'important');
+              el.style.setProperty('margin-left', '0', 'important');
+              el.style.setProperty('margin-right', '0', 'important');
+              el.style.setProperty('box-sizing', 'border-box', 'important');
+            });
+          });
+
+          // Process any iframes we haven't attached to yet
+          doc.querySelectorAll('iframe').forEach(function (f) {
+            if (f._sbCleaned) return;
+            f._sbCleaned = true;
+            if (f.contentDocument && f.contentDocument.head) {
+              SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument);
+            } else {
+              f.addEventListener('load', function () {
+                try { SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument); } catch (e) {}
+              });
+            }
+          });
         }
 
-        applyHide();
+        applyFixes();
 
-        // Re-run whenever the SPA mutates the DOM
-        var mo = new MutationObserver(applyHide);
+        var mo = new MutationObserver(applyFixes);
         mo.observe(doc.documentElement, {
           childList: true, subtree: true,
           attributes: true, attributeFilter: ['style', 'class'],
-        });
-
-        // Recurse into nested iframes
-        doc.querySelectorAll('iframe').forEach(function (f) {
-          if (f.contentDocument && f.contentDocument.head) {
-            SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument);
-          } else {
-            f.addEventListener('load', function () {
-              try { SB_SURVEY_EMBED.cleanIframeDoc(f.contentDocument); } catch (e) {}
-            });
-          }
         });
       } catch (e) {}
     },
