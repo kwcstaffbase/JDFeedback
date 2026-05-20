@@ -103,7 +103,20 @@
           var doc = iframe.contentDocument;
           if (doc && doc.head) {
             var s = doc.createElement('style');
-            s.textContent = 'body, .page, .page.iframe { background: white !important; }';
+            s.textContent = `
+              body, .page, .page.iframe {
+                background: white !important;
+              }
+              .page.iframe, .page-content, .scroller, #content {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                box-sizing: border-box !important;
+              }
+            `;
             doc.head.appendChild(s);
           }
         } catch (e) {
