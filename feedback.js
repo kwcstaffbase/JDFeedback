@@ -98,6 +98,18 @@
       var iframe = document.createElement('iframe');
       iframe.id = 'sb-survey-iframe';
       iframe.src = SB_SURVEY_EMBED.SURVEY_URL;
+      iframe.addEventListener('load', function () {
+        try {
+          var doc = iframe.contentDocument;
+          if (doc && doc.head) {
+            var s = doc.createElement('style');
+            s.textContent = 'body, .page, .page.iframe { background: white !important; }';
+            doc.head.appendChild(s);
+          }
+        } catch (e) {
+          // Cross-origin guard — shouldn't happen here since same-origin
+        }
+      });
 
       var iframeWrapper = document.createElement('div');
       iframeWrapper.id = 'sb-survey-iframe-wrapper';
