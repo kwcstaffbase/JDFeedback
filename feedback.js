@@ -6,6 +6,7 @@
       SB_SURVEY_EMBED.injectStyles();
       SB_SURVEY_EMBED.createTab();
       SB_SURVEY_EMBED.createModal();
+      SB_SURVEY_EMBED.watchForModals();
     },
     injectStyles: function () {
       var style = document.createElement('style');
@@ -119,6 +120,29 @@
     },
     closeModal: function () {
       document.getElementById('sb-survey-overlay').classList.remove('open');
+    },
+    watchForModals: function () {
+      var tab = document.getElementById('sb-survey-tab');
+
+      function hasHostModal() {
+        // Look for any dialog/modal that isn't our own overlay
+        return document.querySelector(
+          '[role="dialog"]:not(#sb-survey-overlay):not(#sb-survey-modal),' +
+          '[aria-modal="true"]:not(#sb-survey-overlay):not(#sb-survey-modal)'
+        ) !== null;
+      }
+
+      function updateTabVisibility() {
+        tab.style.display = hasHostModal() ? 'none' : '';
+      }
+
+      var observer = new MutationObserver(updateTabVisibility);
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['role', 'aria-modal', 'aria-hidden'],
+      });
     },
   };
   if (document.readyState === 'complete') {
