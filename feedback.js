@@ -172,9 +172,11 @@
               el.style.setProperty('width', '100%', 'important');
               el.style.setProperty('max-width', '100%', 'important');
               el.style.setProperty('padding-top', '0', 'important');
+              el.style.setProperty('padding-bottom', '0', 'important');
               el.style.setProperty('padding-left', '0', 'important');
               el.style.setProperty('padding-right', '0', 'important');
               el.style.setProperty('margin-top', '0', 'important');
+              el.style.setProperty('margin-bottom', '0', 'important');
               el.style.setProperty('margin-left', '0', 'important');
               el.style.setProperty('margin-right', '0', 'important');
               el.style.setProperty('box-sizing', 'border-box', 'important');
