@@ -1,4 +1,5 @@
 (function () {
+  if (window !== window.top) return; // Don't run inside iframes
   if (window.SB_SURVEY_EMBED) return;
   window.SB_SURVEY_EMBED = {
     SURVEY_URL: 'https://jdonline.staffbase.com/content/form/6a0366d20abf535a160edfab',
