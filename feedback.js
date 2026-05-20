@@ -135,6 +135,13 @@
             padding: 0 !important;
             margin: 0 !important;
           }
+          /* Hide the Staffbase admin toolbar that sits above the form */
+          .contextual-toolbar-container,
+          .contextual-action-toolbar {
+            display: none !important;
+            height: 0 !important;
+            overflow: hidden !important;
+          }
           .page, .page.iframe,
           .page-content, .scroller, #content,
           .container-fluid, .app-container,
@@ -149,7 +156,6 @@
             margin-left: 0 !important;
             margin-right: 0 !important;
             box-sizing: border-box !important;
-            background: white !important;
           }
           *::-webkit-scrollbar { display: none !important; }
           * { scrollbar-width: none !important; }
