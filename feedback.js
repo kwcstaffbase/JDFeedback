@@ -44,7 +44,7 @@
           display: flex;
           flex-direction: column;
           align-items: flex-end;
-          width: 700px;
+          width: 640px;
           max-width: 95vw;
         }
         #sb-survey-modal {
