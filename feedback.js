@@ -2,7 +2,7 @@
   if (window !== window.top) return; // Don't run inside iframes
   if (window.SB_SURVEY_EMBED) return;
   window.SB_SURVEY_EMBED = {
-    SURVEY_URL: 'https://jdonline.staffbase.com/content/form/6a0366d20abf535a160edfab',
+    SURVEY_URL: 'https://apps.powerapps.com/play/e/1f89d789-9076-ec06-90b5-96b43e86a818/a/c738331f-7d0f-4a2e-8d4e-1382689f3ed3?form=JDO',
     init: function () {
       SB_SURVEY_EMBED.injectStyles();
       SB_SURVEY_EMBED.createTab();
